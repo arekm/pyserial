@@ -241,9 +241,13 @@ def scan_interfaces():
     for service in GetIOServicesByType('IOSerialBSDClient'):
         device = get_string_property(service, "IOCalloutDevice")
         if device:
-            usb_device = GetParentDeviceByType(service, "IOUSBInterface")
+            usb_device = GetParentDeviceByType(service, "IOUSBHostInterface")
+            if not usb_device:
+                # IOUSBInterface is deprecated
+                usb_device = GetParentDeviceByType(service, "IOUSBInterface")
             if usb_device:
-                name = get_string_property(usb_device, "USB Interface Name") or None
+                name = get_string_property(usb_device, "USB Product Name") \
+                    or get_string_property(usb_device, "USB Interface Name") or None
                 locationID = get_int_property(usb_device, "locationID", kCFNumberSInt32Type) or ''
                 i = SuitableSerialInterface()
                 i.id = locationID
